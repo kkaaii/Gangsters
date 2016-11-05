@@ -7,9 +7,9 @@
 #define T 30000
 
 struct gangster {
-    int t;
-    int p;
-    int s;
+    int t;  /* moments of time when gangsters come */
+    int p;  /* prosperity of gangsters */
+    int s;  /* stoutness of gangsters */
 };
 
 struct gangster g[1 + N];
@@ -43,8 +43,34 @@ int main(void)
     return 0;
 }
 
+static inline int ABS(int x)
+{
+    return x < 0 ? -x : x;
+}
+
+int dp[1 + N];
 int dfs(void)
 {
     int ans = 0;
+    int i, j;
+    int v;
+    
+    memset(dp, 0, sizeof (dp));
+    for (i = 1; i <= n; ++i) {
+        if (g[i].t >= g[i].s)
+            dp[i] = g[i].p;
+        for (j = i - 1; j >= 0; --j) {
+            if (0 == dp[j])
+                continue;
+            if (ABS(g[i].s - g[j].s) > g[i].t - g[j].t)
+                continue;
+            v = dp[j] + g[i].p;
+            if (dp[i] < v)
+                dp[i] = v;
+        }
+        if (ans < dp[i])
+            ans = dp[i];
+    }
+
     return ans;
 }
